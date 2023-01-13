@@ -3,7 +3,7 @@ Author - Aces
 
     - Austin Jesperson
     - Sammie Atkins
-    - {Add Name Here}
+    - Jordan Sherwood
     - {Add Name Here}
 
 ## Project Description
