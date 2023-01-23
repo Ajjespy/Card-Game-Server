@@ -2,7 +2,7 @@
 Author - Aces
 
     - Austin Jesperson
-    - {Add Name Here}
+    - Sammie Atkins
     - Jordan Sherwood
     - {Add Name Here}
 
@@ -12,3 +12,5 @@ Author - Aces
 [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
     
     - Add left arrow (←) with ALT + 2 + 7
+
+[Interactive JavaScript Course](https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/basic-javascript/)
