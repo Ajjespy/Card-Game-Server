@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Schoolbell&display=swap');
+
+footer {
+    background-color: #131B2F;
+    font-family: 'Schoolbell', cursive;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+footer p {
+    align-self: center;
+    font-size: 1.5em;
+    padding: 10px;
+}
+.footerLogo {
+    width: 10%;
+}
