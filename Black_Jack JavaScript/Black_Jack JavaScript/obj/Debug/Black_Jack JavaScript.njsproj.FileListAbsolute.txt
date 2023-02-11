@@ -1,0 +1,3 @@
+C:\Users\Jordan\Desktop\School\Programming\CSE 310 - Applied Programming\Personal Projects\Black_Jack JavaScript\Black_Jack JavaScript\obj\Debug\Black_Jack JavaScript.njsproj.AssemblyReference.cache
+C:\Users\Jordan\Desktop\School\Programming\CSE 310 - Applied Programming\Personal Projects\Black_Jack JavaScript\Black_Jack JavaScript\obj\Debug\Black_Jack JavaScript.njsproj.CoreCompileInputs.cache
+C:\Users\Jordan\Desktop\School\Programming\CSE 310 - Applied Programming\Personal Projects\Black_Jack JavaScript\Black_Jack JavaScript\bin\Microsoft.NodejsTools.WebRole.dll
