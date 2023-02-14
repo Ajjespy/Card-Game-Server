@@ -22,6 +22,10 @@ p {
     border-radius: 30px;
     padding: 10px 35px;
 }
+.gameHomeBtn:hover {
+    background-color: #131B2F;
+    color: white;
+}
 .gameBtnDiv {
     display: flex;
     justify-content: space-around;

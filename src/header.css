@@ -7,6 +7,9 @@ header {
   color: white;
   padding: 0 2%;
 }
+header a {
+  /* MAKE SAME WIDTH AS LOGO SOMEHOW */
+}
 .headerLogo {
   width: 30%;
 }
@@ -35,14 +38,13 @@ header {
   border-radius: 30px;
 }
 .navLink {
-  color: black;
+  color: #131B2F;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
 }
 /* Change color of dropdown links on hover */
 .navLink:hover {
-  background-color: white;
   border-radius: 30px;
   background-color:#F74C44;
   color: white;
@@ -57,7 +59,7 @@ header {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropDown:hover .headerBtn {
   background-color: white;
-  color: black;
+  color: #131B2F;
 }
 
 #suitsDiv {
