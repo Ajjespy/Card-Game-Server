@@ -1,0 +1,8 @@
+.blackJack {
+    width: 60%;
+    margin: 0 auto 2%;
+}
+.blackJack .link {
+    display: block;
+    text-align: center;
+}
