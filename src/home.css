@@ -1,0 +1,15 @@
+#home {
+    width: 60%;
+    margin: 0 auto;
+}
+#home h1 {
+    margin: 0;
+}
+.gameOptions {
+    display: flex;
+    gap: 2%;
+    justify-content: space-around;
+}
+.gameOptions ul {
+    padding-inline-start: 15px;
+}

@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Schoolbell&display=swap');
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Schoolbell";
+    text-align: center;
+}
+p {
+    font-family: "Quicksand";
+}
+.link {
+    font-family: "Quicksand";
+
+}
+
+/* HOME PAGES */
+.gameHomeBtn {
+    background-color: #F74C44;
+    font-family: 'Schoolbell', cursive;
+    font-size: 1.5em;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 35px;
+}
+.gameHomeBtn:hover {
+    background-color: #131B2F;
+    color: white;
+}
+.gameBtnDiv {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* RULES */
+.rules {
+    width: 60%;
+    margin: 0 auto;
+}
