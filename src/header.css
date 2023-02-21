@@ -7,9 +7,6 @@ header {
   color: white;
   padding: 0 2%;
 }
-header a {
-  /* MAKE SAME WIDTH AS LOGO SOMEHOW */
-}
 .headerLogo {
   width: 30%;
 }
