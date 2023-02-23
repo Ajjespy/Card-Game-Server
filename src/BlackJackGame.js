@@ -55,7 +55,7 @@ import {
     jack_of_diamonds,
     queen_of_diamonds,
     king_of_diamonds
-} from "./cardimages/CardImages";
+} from "./PNG-cards/CardImages";
 
 const SUIT_INDEX = 0;
 const VALUE_INDEX = 1;
