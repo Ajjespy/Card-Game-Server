@@ -8,9 +8,11 @@ import Home from './Home';
 import { Route, Routes } from 'react-router-dom'
 
 function App() {
+  // const [beginning,setBeginning] = useState(true);
   return (
     <div className="App">
       <MakeHeader />
+      {/* {setBeginning = false} */}
       <div className="container">
         <Routes>
           <Route path="/Home.js" element={ <Home />} />

@@ -28,10 +28,10 @@ function MakeHeader() {
                 </div>
             </header>
             <div id='suitsDiv'>
-                <img src={spade} alt='spade' className='headerSuit'></img>
-                <img src={diamond} alt='diamond' className='headerSuit'></img>
-                <img src={club} alt='club' className='headerSuit'></img>
-                <img src={heart} alt='heart' className='headerSuit'></img>
+                <img src={spade} alt='' className='headerSuit'></img>
+                <img src={diamond} alt='' className='headerSuit'></img>
+                <img src={club} alt='' className='headerSuit'></img>
+                <img src={heart} alt='' className='headerSuit'></img>
             </div>
         </div>
     )
