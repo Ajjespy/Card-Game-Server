@@ -68,7 +68,6 @@ function get_ace_value(subtotal) {
 	}
 }
 
-
 function get_hand_value(hand) {
 	var total = 0;
 	// Track the aces because they will be added at the end

@@ -6,3 +6,9 @@
     display: block;
     text-align: center;
 }
+.cardimg {
+    width: 10%;
+}
+#blackjack {
+    margin: 10px;
+}
