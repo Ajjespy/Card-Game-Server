@@ -1,6 +1,10 @@
 .blackJack {
     width: 60%;
     margin: 0 auto 2%;
+    background-color: #131B2F;
+    border-radius: 10px;
+    padding: 2%;
+    color: white;
 }
 .blackJack .link {
     display: block;
@@ -8,7 +12,4 @@
 }
 .cardimg {
     width: 10%;
-}
-#blackjack {
-    margin: 10px;
 }

@@ -3,6 +3,7 @@ import Card from "./components/Card";
 import "./App.css";
 import "./blackJack.css";
 import {
+    card_back,
     ace_of_spades,
     two_of_spades,
     three_of_spades,
@@ -66,8 +67,12 @@ const FILEPATH_INDEX = 4;
 class BlackJackGame extends React.Component{
     constructor(props) {
         super(props)
-        this.get_ace_value = this.get_ace_value.bind(this);
-        this.get_hand_value = this.get_hand_value.bind(this);
+        this.drawCards = this.drawCards.bind(this);
+        this.getAceValue = this.getAceValue.bind(this);
+        this.getHandValue = this.getHandValue.bind(this);
+        this.displayHand = this.displayHand.bind(this);
+        this.hitMe = this.hitMe.bind(this);
+        this.state = {displayAgain: false};
     }
     createCardsDict() {
         const cardsDict = {
@@ -147,17 +152,17 @@ class BlackJackGame extends React.Component{
         }
         return deck;
     }
-    // needs edits
-    draw_cards(deck, hand, number) {
+    drawCards(deck, hand, number) {
         for (var i = 0; i < number; i++) {
             // Generate a random card
-            var rand_card = deck[Math.floor(Math.random() * 52)];
+            var rand_card_index = Math.floor(Math.random() * deck.length - 1);
+            var rand_card = deck.splice(rand_card_index, 1);
     
             // Add the card to the player's hand
-            hand.push(rand_card);
+            hand.push(rand_card[0]);
         }
     }
-    get_ace_value(subtotal) {
+    getAceValue(subtotal) {
         // Count the ace as 11 unless that would put your total above 21.
         if (subtotal + 11 <= 21) {
             return 11;
@@ -166,45 +171,68 @@ class BlackJackGame extends React.Component{
             return 1;
         }
     }
-    get_hand_value(hand) {
+    getHandValue(hand) {
         var total = 0;
         // Track the aces because they will be added at the end
         var aces = 0;
     
         // Traverse the list of cards and display each one and add the value to the total
-        for (var i = 0; i < hand.length; i++) {
+        for (var card = 0; card < hand.length; card++) {
             // Add the value of the card to the total
-            if (hand[i]["value"] === 'A') {
+            if (hand[card].getName() === "A") {
+                // Add to the number of aces to calculate value later.
                 aces++;
             }
+            else if (hand[card].getName() === "K" || hand[card].getName() === "Q" || hand[card].getName() === "J") {
+                // Face cards are worth 10.
+                total += 10;
+            }
             else {
-                total += this.get_card_value(hand[i]["value"]);
+                total += hand[card].getValue();
             }
         }
         // Now add the value of the aces
         for (var index = 0; index < aces; index++) {
-            total += this.get_ace_value(total);
+            total += this.getAceValue(total);
         }
         // Return the total
         return total;
     }
-    // display_hand
-    // hit me and stand buttons need to do something
-    // put main() code into function
-    director() {
+    displayHand(hand) {
+        const listItems = hand.map((card) => <img src={card.getFilepath()} alt={card.getName()}></img>);
 
-    } 
+        return (
+            <div>
+            {listItems}
+            </div>
+        );
+    }   
+    hitMe(deck, hand) {
+        this.drawCards(deck, hand, 1)
+        console.log(hand);
+        // this.setState({displayAgain: true});
+    }
+
     render () {
         var cardsDict = this.createCardsDict();
         var deck = this.createDeck(cardsDict);
+        var playerHand = [];
+        var dealerHand = [];
+        this.drawCards(deck, playerHand, 2);
+        this.drawCards(deck, dealerHand, 2);
+
         return (
-            <div id="blackjack">
-                <p id="deck">deck</p>
-                <p id="hand">hand</p>
+            <div id="blackjack" className="blackJack">
+                <img src={card_back} className="cardimg"></img>
                 {/* dynamic alt text */}
-                <img src={deck[0].getFilepath()} className="cardimg"></img>
-                <button id="hitme" class="gameHomeBtn">Hit me</button>
-                <button id="stand" class="gameHomeBtn">Stand</button>
+                <h1>player hand:</h1>
+                <div className="cardimg">{this.displayHand(playerHand)}</div>
+                {/* <h1>dealer hand:</h1>
+                <div className="cardimg">{this.displayHand(dealerHand)}</div> */}
+
+                <button id="hitme" className="gameHomeBtn" onClick={this.hitMe(deck, playerHand)}>Hit me</button>
+                <div className="cardimg">{this.displayHand(playerHand)}</div>
+                <button id="stand" className="gameHomeBtn">Stand</button>
             </div>
         )
     }
@@ -214,3 +242,14 @@ export default BlackJackGame
 // useEffect - 
 // dependency array - 
 // lifecycle methods: on render?
+
+// display_hand
+// hit me and stand buttons need to do something
+// put main() code into function ?
+
+// displayCard(card) {
+//     var filepath = card.getFilepath();
+//     return(
+//         <img src={filepath}></img>
+//     )
+// }
