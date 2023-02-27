@@ -1,3 +1,5 @@
+export const card_back = require("./card_back.png");
+
 export const ace_of_spades = require("./ace_of_spades.png");
 export const two_of_spades = require("./2_of_spades.png")
 export const three_of_spades = require("./3_of_spades.png")

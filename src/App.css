@@ -23,8 +23,8 @@ p {
     padding: 10px 35px;
 }
 .gameHomeBtn:hover {
-    background-color: #131B2F;
-    color: white;
+    background-color: white;
+    color: #131B2F;
 }
 .gameBtnDiv {
     display: flex;
