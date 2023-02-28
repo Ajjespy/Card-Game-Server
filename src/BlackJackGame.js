@@ -72,10 +72,16 @@ class BlackJackGame extends React.Component{
         this.getHandValue = this.getHandValue.bind(this);
         this.displayHand = this.displayHand.bind(this);
         this.hitMe = this.hitMe.bind(this);
-        this.state = {displayAgain: false};
+        this.state = {
+            count: 2,
+            playerHand: [],
+            dealerHand: [],
+            cardsDict: {},
+            deck: []
+        };
     }
-    createCardsDict() {
-        const cardsDict = {
+    async createCardsDict() {
+        const editedCardsDict = {
             "ASpades":["Spades", 1, "Black", "A", ace_of_spades],
             "2Spades":["Spades", 2, "Black", "2", two_of_spades],
             "3Spades":["Spades", 3, "Black", "3", three_of_spades],
@@ -132,12 +138,15 @@ class BlackJackGame extends React.Component{
             "QDiamonds": ["Diamonds", 12, "Q", "Red", queen_of_diamonds],
             "KDiamonds": ["Diamonds", 13, "K", "Red", king_of_diamonds]    
         }
-        return cardsDict;
+        this.setState({
+            cardsDict: editedCardsDict
+        })
     }
-    createDeck(cardsDict) {
+    async createDeck() {
         const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
         const suits = ["Spades", "Clubs", "Hearts", "Diamonds"];
-        var deck = [];
+        var editedDeck = this.state.deck;
+        var cardsDict = this.state.cardsDict;
         for (var i = 0; i < values.length; i++) {
             for (var j = 0; j < suits.length; j++) {
                 var key = values[i] + suits[j];
@@ -147,20 +156,31 @@ class BlackJackGame extends React.Component{
                 card.setColor(cardsDict[key][COLOR_INDEX]);
                 card.setName(cardsDict[key][NAME_INDEX]);
                 card.setFilepath(cardsDict[key][FILEPATH_INDEX]);
-                deck.push(card);
+                editedDeck.push(card);
             }
         }
-        return deck;
+        await console.log(editedDeck)
+        this.setState({
+            deck: editedDeck
+        })
     }
-    drawCards(deck, hand, number) {
+    async drawCards(hand, number) {
+        var editedHand = hand;
+        var editedDeck = this.state.deck;
         for (var i = 0; i < number; i++) {
             // Generate a random card
-            var rand_card_index = Math.floor(Math.random() * deck.length - 1);
-            var rand_card = deck.splice(rand_card_index, 1);
+            var rand_card_index = Math.floor(Math.random() * editedDeck.length - 1);
+            var rand_card = editedDeck.splice(rand_card_index, 1);
     
             // Add the card to the player's hand
-            hand.push(rand_card[0]);
+            editedHand.push(rand_card[0]);
         }
+        console.log(editedHand)
+        // console.log(editedDeck)
+        this.setState({
+            playerHand: editedHand,
+            deck: editedDeck
+        })
     }
     getAceValue(subtotal) {
         // Count the ace as 11 unless that would put your total above 21.
@@ -200,38 +220,31 @@ class BlackJackGame extends React.Component{
     }
     displayHand(hand) {
         const listItems = hand.map((card) => <img src={card.getFilepath()} alt={card.getName()}></img>);
-
+        console.log("got to displayHand function")
         return (
             <div>
             {listItems}
             </div>
         );
-    }   
-    hitMe(deck, hand) {
-        this.drawCards(deck, hand, 1)
-        console.log(hand);
-        // this.setState({displayAgain: true});
+    } 
+    // not used anymore  
+    hitMe(hand) {
+        this.drawCards(hand, 1)
+        var countTest = this.state.count + 1
+        this.setState({
+            count: countTest
+        })
     }
-
     render () {
-        var cardsDict = this.createCardsDict();
-        var deck = this.createDeck(cardsDict);
-        var playerHand = [];
-        var dealerHand = [];
-        this.drawCards(deck, playerHand, 2);
-        this.drawCards(deck, dealerHand, 2);
-
         return (
             <div id="blackjack" className="blackJack">
-                <img src={card_back} className="cardimg"></img>
-                {/* dynamic alt text */}
+                <p>{this.state.count}</p>
+                <img src={card_back} className="cardimg" alt=""></img>
+                <button className="gameHomeBtn" onClick={async () => {await this.createCardsDict(); await this.createDeck(); await this.drawCards(this.state.playerHand, 2)}}>Start</button>
                 <h1>player hand:</h1>
-                <div className="cardimg">{this.displayHand(playerHand)}</div>
-                {/* <h1>dealer hand:</h1>
-                <div className="cardimg">{this.displayHand(dealerHand)}</div> */}
+                <div className="cardimg">{this.displayHand(this.state.playerHand)}</div>
 
-                <button id="hitme" className="gameHomeBtn" onClick={this.hitMe(deck, playerHand)}>Hit me</button>
-                <div className="cardimg">{this.displayHand(playerHand)}</div>
+                <button id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1)}>Hit me</button>
                 <button id="stand" className="gameHomeBtn">Stand</button>
             </div>
         )
@@ -239,6 +252,11 @@ class BlackJackGame extends React.Component{
 }
 
 export default BlackJackGame
+// IDEAS:
+// - toggle start button and the rest of the buttons so they can't be pressed out of order. 
+
+
+
 // useEffect - 
 // dependency array - 
 // lifecycle methods: on render?
