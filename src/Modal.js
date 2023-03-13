@@ -9,9 +9,7 @@ const Modal = ({ handleClose, show, children }) => {
     <div className={showHideClassName}>
       <section className="modal-main">
         {children}
-        <button type="button" onClick={handleClose}>
-            <Link to="/BlackJack.js" className="navLink">Play Again</Link>
-        </button>
+        <Link to="/BlackJack.js"><button className="gameHomeBtn" type="button" onClick={handleClose}>Play Again</button></Link>
       </section>
     </div>
   );

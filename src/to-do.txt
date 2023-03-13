@@ -1,4 +1,5 @@
-only show one card of the dealer hand
-whoWon()
 game over screen for when player busts
-deactivating buttons
+connecting start game to play button
+play again button - change to make default values? (call start button). Would need a home button on modal
+animations
+on refresh, save progress
