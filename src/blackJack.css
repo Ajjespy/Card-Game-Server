@@ -10,6 +10,12 @@
     display: block;
     text-align: center;
 }
-.cardimg {
-    width: 10%;
+.cardimages {
+    display: flex;
+}
+#cardBackBlock {
+    display: block;
+}
+#cardBackNone {
+    display: none;
 }

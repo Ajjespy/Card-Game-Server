@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import './blackJack.css';
-import Card from './components/Card';
 
 function BlackJack() {
     return (

@@ -1,4 +1,5 @@
 import React from "react";
+import Modal from './Modal.js';
 import Card from "./components/Card";
 import "./App.css";
 import "./blackJack.css";
@@ -60,8 +61,8 @@ import {
 
 const SUIT_INDEX = 0;
 const VALUE_INDEX = 1;
-const COLOR_INDEX = 2;
-const NAME_INDEX = 3;
+const NAME_INDEX = 2;
+const COLOR_INDEX = 3;
 const FILEPATH_INDEX = 4;
 
 class BlackJackGame extends React.Component{
@@ -71,30 +72,42 @@ class BlackJackGame extends React.Component{
         this.getAceValue = this.getAceValue.bind(this);
         this.getHandValue = this.getHandValue.bind(this);
         this.displayHand = this.displayHand.bind(this);
-        this.hitMe = this.hitMe.bind(this);
+        this.dealerTurn = this.dealerTurn.bind(this);
+        this.showModal = this.showModal.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        this.startGame = this.startGame.bind(this);
         this.state = {
-            count: 2,
             playerHand: [],
             dealerHand: [],
+            values: {
+                playerHandValue: 0,
+                dealerHandValue: 0                
+            },
+            isDealerTurn: false,
             cardsDict: {},
-            deck: []
+            deck: [],
+            hitMeDisabled: true,
+            standDisabled: true,
+            startDisabled: false,
+            showModal: false,
+            gameOverMessage: ""
         };
     }
     async createCardsDict() {
         const editedCardsDict = {
-            "ASpades":["Spades", 1, "Black", "A", ace_of_spades],
-            "2Spades":["Spades", 2, "Black", "2", two_of_spades],
-            "3Spades":["Spades", 3, "Black", "3", three_of_spades],
-            "4Spades":["Spades", 4, "Black", "4", four_of_spades],
-            "5Spades":["Spades", 5, "Black", "5", five_of_spades],
-            "6Spades":["Spades", 6, "Black", "6", six_of_spades],
-            "7Spades":["Spades", 7, "Black", "7", seven_of_spades],
-            "8Spades":["Spades", 8, "Black", "8", eight_of_spades],
-            "9Spades":["Spades", 9, "Black", "9", nine_of_spades],
-            "10Spades":["Spades", 10, "Black", "10", ten_of_spades],
-            "JSpades":["Spades", 11, "Black", "J", jack_of_spades],
-            "QSpades":["Spades", 12, "Black", "Q", queen_of_spades],
-            "KSpades":["Spades", 13, "Black", "K", king_of_spades],
+            "ASpades":["Spades", 1, "A", "Black", ace_of_spades],
+            "2Spades":["Spades", 2, "2", "Black", two_of_spades],
+            "3Spades":["Spades", 3, "3", "Black", three_of_spades],
+            "4Spades":["Spades", 4, "4", "Black", four_of_spades],
+            "5Spades":["Spades", 5, "5", "Black", five_of_spades],
+            "6Spades":["Spades", 6, "6", "Black", six_of_spades],
+            "7Spades":["Spades", 7, "7", "Black", seven_of_spades],
+            "8Spades":["Spades", 8, "8", "Black", eight_of_spades],
+            "9Spades":["Spades", 9, "9", "Black", nine_of_spades],
+            "10Spades":["Spades", 10, "10", "Black", ten_of_spades],
+            "JSpades":["Spades", 11, "J", "Black", jack_of_spades],
+            "QSpades":["Spades", 12, "Q", "Black", queen_of_spades],
+            "KSpades":["Spades", 13, "K", "Black", king_of_spades],
 
             "AClubs": ["Clubs", 1, "A", "Black", ace_of_clubs],
             "2Clubs": ["Clubs", 2, "2", "Black", two_of_clubs],
@@ -164,22 +177,90 @@ class BlackJackGame extends React.Component{
             deck: editedDeck
         })
     }
-    async drawCards(hand, number) {
+    async drawCards(hand, number, key) {
         var editedHand = hand;
         var editedDeck = this.state.deck;
+        var editedValue = this.state.values[key];
+        var editedValuesDict = this.state.values;
+        // var valueKey = this.state.values[key];
         for (var i = 0; i < number; i++) {
             // Generate a random card
-            var rand_card_index = Math.floor(Math.random() * editedDeck.length - 1);
-            var rand_card = editedDeck.splice(rand_card_index, 1);
+            var randCardIndex = Math.floor(Math.random() * editedDeck.length - 1);
+            var randCard = editedDeck.splice(randCardIndex, 1);
     
             // Add the card to the player's hand
-            editedHand.push(rand_card[0]);
+            editedHand.push(randCard[0]);
+
+            var aces = 0;
+            if (randCard[0].getName() === "A") {
+                // Add to the number of aces to calculate value later.
+                aces++;
+            }
+            else if (randCard[0].getName() === "K" || randCard[0].getName() === "Q" || randCard[0].getName() === "J") {
+                // Face cards are worth 10.
+                editedValue += 10;
+            }
+            else {
+                editedValue += randCard[0].getValue();
+            }
+            // Now add the value of the aces
+            for (var index = 0; index < aces; index++) {
+                editedValue += this.getAceValue(editedValue);
+            }
         }
-        console.log(editedHand)
-        // console.log(editedDeck)
+        editedValuesDict[key] = editedValue;
+        console.log(`editedValue ${key}: ${editedValue}`)
         this.setState({
-            playerHand: editedHand,
-            deck: editedDeck
+            hand: editedHand,
+            deck: editedDeck,
+            values: editedValuesDict
+        }, () => {
+            if (this.state.values["playerHandValue"] > 21) {
+                this.setState({
+                    hitMeDisabled: true,
+                    standDisabled: true
+                })
+                this.whoWon();
+                // <Link to="/BlackJack.js" className="navLink">Black Jack</Link>
+            }
+            if (this.state.isDealerTurn === true && this.state.values["dealerHandValue"] < 17) {
+                this.drawCards(this.state.dealerHand, 1, "dealerHandValue")
+            }
+            else if (this.state.isDealerTurn === true && this.state.values["dealerHandValue"] >= 17) {
+                this.whoWon();
+            }
+        })
+    }
+    whoWon() {
+        if (this.state.values["playerHandValue"] > 21) {
+            this.setState({
+                gameOverMessage: "Bust"
+            });
+        }
+        else if (this.state.values["dealerHandValue"] > 21) {
+            this.setState({
+                gameOverMessage: "You win!"
+            });
+        }
+        else if (this.state.values["playerHandValue"] > this.state.values["dealerHandValue"]) {
+            this.setState({
+                gameOverMessage: "You win!"
+            });
+        }
+        else {
+            this.setState({
+                gameOverMessage: "Dealer wins"
+            });
+        }
+        this.showModal();
+    }
+    dealerTurn() {
+        this.setState({
+            hitMeDisabled: true,
+            standDisabled: true,
+            isDealerTurn: true
+        }, () => {
+            this.drawCards(this.state.dealerHand, 1, "dealerHandValue")
         })
     }
     getAceValue(subtotal) {
@@ -191,24 +272,23 @@ class BlackJackGame extends React.Component{
             return 1;
         }
     }
-    getHandValue(hand) {
+    async getHandValue(hand) {
         var total = 0;
         // Track the aces because they will be added at the end
         var aces = 0;
-    
         // Traverse the list of cards and display each one and add the value to the total
-        for (var card = 0; card < hand.length; card++) {
+        for (var i = 0; i < hand.length; i++) {
             // Add the value of the card to the total
-            if (hand[card].getName() === "A") {
+            if (hand[i].getName() === "A") {
                 // Add to the number of aces to calculate value later.
                 aces++;
             }
-            else if (hand[card].getName() === "K" || hand[card].getName() === "Q" || hand[card].getName() === "J") {
+            else if (hand[i].getName() === "K" || hand[i].getName() === "Q" || hand[i].getName() === "J") {
                 // Face cards are worth 10.
                 total += 10;
             }
             else {
-                total += hand[card].getValue();
+                total += hand[i].getValue();
             }
         }
         // Now add the value of the aces
@@ -219,33 +299,54 @@ class BlackJackGame extends React.Component{
         return total;
     }
     displayHand(hand) {
-        const listItems = hand.map((card) => <img src={card.getFilepath()} alt={card.getName()}></img>);
-        console.log("got to displayHand function")
+        const listItems = hand.map((card) => <img className="" src={card.getFilepath()} alt={card.getName()}></img>);
         return (
-            <div>
+            <div className="cardimages">
             {listItems}
             </div>
         );
-    } 
-    // not used anymore  
-    hitMe(hand) {
-        this.drawCards(hand, 1)
-        var countTest = this.state.count + 1
+    }
+    showModal() {
+        this.setState({ showModal: true });
+    };
+    hideModal() {
+        this.setState({ showModal: false });
+    };
+    async startGame() {
+        await this.createCardsDict();
+        await this.createDeck();
+        await this.drawCards(this.state.playerHand, 2, "playerHandValue");
+        await this.drawCards(this.state.dealerHand, 1, "dealerHandValue");
         this.setState({
-            count: countTest
+            startDisabled: true,
+            hitMeDisabled: false,
+            standDisabled: false
         })
     }
     render () {
         return (
             <div id="blackjack" className="blackJack">
-                <p>{this.state.count}</p>
-                <img src={card_back} className="cardimg" alt=""></img>
-                <button className="gameHomeBtn" onClick={async () => {await this.createCardsDict(); await this.createDeck(); await this.drawCards(this.state.playerHand, 2)}}>Start</button>
-                <h1>player hand:</h1>
-                <div className="cardimg">{this.displayHand(this.state.playerHand)}</div>
 
-                <button id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1)}>Hit me</button>
-                <button id="stand" className="gameHomeBtn">Stand</button>
+                <button disabled={this.state.startDisabled} className="gameHomeBtn" onClick={this.startGame}>Start</button>
+
+                <h1>dealer hand:</h1>
+                <div className="cardimages">
+                    <img id={this.state.isDealerTurn ? "cardBackNone":"cardBackBlock"} src={card_back} alt=""></img>
+                    {this.displayHand(this.state.dealerHand)}
+                </div>
+
+                <h1>player hand:</h1>
+                <div>
+                    {this.displayHand(this.state.playerHand)}
+                </div>
+
+
+                <button disabled={this.state.hitMeDisabled} id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1, "playerHandValue")}>Hit me</button>
+                <button disabled={this.state.standDisabled} id="stand" className="gameHomeBtn" onClick={this.dealerTurn}>Stand</button>
+
+                <Modal show={this.state.showModal} handleClose={this.hideModal}>
+                    <h2>{this.state.gameOverMessage}</h2>
+                </Modal>
             </div>
         )
     }
