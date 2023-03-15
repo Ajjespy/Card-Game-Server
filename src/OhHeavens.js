@@ -230,19 +230,42 @@ class OhHeavens extends React.Component{
     }
     // not finished yet
     whoWonTrick() {
+        // pull trump cards if any
+        // highest trump card = winner
+        // else highest of first suit = winner
         var pile = this.state.pile;
         var firstCardSuit = this.state.pile[0].getSuit();
-        var winningCards = [];
+        var trumpSuitCards = [];
+        var originalSuitCards = [];
         var highest;
+        var winningCard;
         for (var card in pile) {
             if (card.getSuit() === this.state.trumpSuit) {
-
+                trumpSuitCards.push(card);
             }
-            if (card.getSuit() === firstCardSuit) {
-                winningCards.push(card);
+            else if (card.getSuit() === firstCardSuit) {
+                originalSuitCards.push(card);
             }
         }
+        // if there is a trump card, ignore the others
+        if (trumpSuitCards.length > 0) {
+            // figure out which card is the highest
+            if (trumpSuitCards.length === 1) {
+                winningCard = trumpSuitCards[0];
+            }
+            else {
+                // loop through cards to figure out which is highest
+            }
+        }
+        else {
+            if (originalSuitCards.length === 1) {
+                winningCard = originalSuitCards[0];
+            }
+        }
+        
         // pile and playerQueue should match up - return winningPlayer
+        
+        
     }
     // should this just be part of whoWon()?
     updateTricksWon(winningPlayer) {
