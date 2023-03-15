@@ -90,7 +90,8 @@ class BlackJackGame extends React.Component{
             standDisabled: true,
             startDisabled: false,
             showModal: false,
-            gameOverMessage: ""
+            gameOverMessage: "",
+            isBust: false
         };
     }
     async createCardsDict() {
@@ -172,7 +173,6 @@ class BlackJackGame extends React.Component{
                 editedDeck.push(card);
             }
         }
-        await console.log(editedDeck)
         this.setState({
             deck: editedDeck
         })
@@ -182,7 +182,6 @@ class BlackJackGame extends React.Component{
         var editedDeck = this.state.deck;
         var editedValue = this.state.values[key];
         var editedValuesDict = this.state.values;
-        // var valueKey = this.state.values[key];
         for (var i = 0; i < number; i++) {
             // Generate a random card
             var randCardIndex = Math.floor(Math.random() * editedDeck.length - 1);
@@ -229,17 +228,18 @@ class BlackJackGame extends React.Component{
             else if (this.state.isDealerTurn === true && this.state.values["dealerHandValue"] >= 17) {
                 this.whoWon();
             }
-        })
+        });
     }
     whoWon() {
         if (this.state.values["playerHandValue"] > 21) {
             this.setState({
-                gameOverMessage: "Bust"
+                gameOverMessage: "Bust! \n Dealer wins",
+                isBust: true
             });
         }
         else if (this.state.values["dealerHandValue"] > 21) {
             this.setState({
-                gameOverMessage: "You win!"
+                gameOverMessage: "You win! \n Dealer busted"
             });
         }
         else if (this.state.values["playerHandValue"] > this.state.values["dealerHandValue"]) {
@@ -249,7 +249,7 @@ class BlackJackGame extends React.Component{
         }
         else {
             this.setState({
-                gameOverMessage: "Dealer wins"
+                gameOverMessage: "Dealer wins!"
             });
         }
         this.showModal();
@@ -298,14 +298,6 @@ class BlackJackGame extends React.Component{
         // Return the total
         return total;
     }
-    displayHand(hand) {
-        const listItems = hand.map((card) => <img className="" src={card.getFilepath()} alt={card.getName()}></img>);
-        return (
-            <div className="cardimages">
-            {listItems}
-            </div>
-        );
-    }
     showModal() {
         this.setState({ showModal: true });
     };
@@ -323,29 +315,36 @@ class BlackJackGame extends React.Component{
             standDisabled: false
         })
     }
+    displayHand(hand) {
+        const listItems = hand.map((card) => <img className="handImage" src={card.getFilepath()} alt={card.getName()}></img>);
+        return (
+            <div className="cardimages">
+            {listItems}
+            </div>
+        );
+    }
     render () {
         return (
             <div id="blackjack" className="blackJack">
 
                 <button disabled={this.state.startDisabled} className="gameHomeBtn" onClick={this.startGame}>Start</button>
 
-                <h1>dealer hand:</h1>
+                <h1>Dealer Hand:</h1>
                 <div className="cardimages">
-                    <img id={this.state.isDealerTurn ? "cardBackNone":"cardBackBlock"} src={card_back} alt=""></img>
+                    <img id={this.state.isDealerTurn ? "displayNone":"displayBlock"} className="handImage" src={card_back} alt=""></img>
                     {this.displayHand(this.state.dealerHand)}
                 </div>
 
-                <h1>player hand:</h1>
-                <div>
-                    {this.displayHand(this.state.playerHand)}
-                </div>
-
+                <h1>Your Hand:</h1>
+                {this.displayHand(this.state.playerHand)}
 
                 <button disabled={this.state.hitMeDisabled} id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1, "playerHandValue")}>Hit me</button>
                 <button disabled={this.state.standDisabled} id="stand" className="gameHomeBtn" onClick={this.dealerTurn}>Stand</button>
 
                 <Modal show={this.state.showModal} handleClose={this.hideModal}>
                     <h2>{this.state.gameOverMessage}</h2>
+                    <p>Player score: {this.state.values["playerHandValue"]}</p>
+                    <p className={this.state.isBust ? "displayNone":"displayBlock"}>Dealer score: {this.state.values["dealerHandValue"]}</p>
                 </Modal>
             </div>
         )

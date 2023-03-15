@@ -1,5 +1,14 @@
-game over screen for when player busts
-connecting start game to play button
-play again button - change to make default values? (call start button). Would need a home button on modal
-animations
-on refresh, save progress
+BlackJack:
+    - FIX BUG WITH ACES
+    - game over screen for when player busts
+    - connecting start game to play button
+    - play again button - change to make default values? (call start button). Would need a home button on modal
+    - animations
+    - on refresh, save progress
+    - TIE GAME??
+
+Oh Heavens:
+    - Rules
+    - Ask Birch about 
+        - setting temporary variables (class within class within list)
+        - waiting for user input by event (picking a card)

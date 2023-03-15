@@ -23,7 +23,7 @@ function MakeHeader() {
                 <div className='dropDown'>
                     <button className='multiPlaerBtn headerBtn'>Multiplayer</button>
                     <div className='gamesDropdown'>
-                        
+                        <Link to="/OhHeavens.js" className="navLink">Oh Heavens</Link>                        
                     </div>
                 </div>
             </header>

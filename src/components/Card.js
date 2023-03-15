@@ -41,8 +41,6 @@ class Card extends React.Component {
     getFilepath() {
         return(this.state.filepath)
     }
-
-
     render() {
         return (
             <div>
