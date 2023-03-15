@@ -6,7 +6,7 @@ function playGame(){ // Set to start button
         drawCards(handSize) //Maybe done, might need updating to go to each player or set as a forEach(), Args?
         askBid(handSize) // Not done, Args?
         for (j = 1; j <= handSize; j++){ // ROUND
-            playerQueue.forEach(function(player){ // TRICK
+            this.state.playerQueue.forEach(function(player){ // TRICK
                 canPlayCard(player)
                 let cardIndex //figure out how to pause until user input/get user input and store chosen card
                 playCard(player, cardIndex)
@@ -111,9 +111,8 @@ function playCard(player, cardIndex){ // Testing required
     this.setState({
         pile: tempile
     }, () => {
-        //add something here later if needed
+        player.updateHand(temphand)
     })
-    player.updateHand(temphand)
 }
 
 function updateDealerQueue(){ // Testing required
