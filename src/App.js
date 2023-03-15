@@ -4,6 +4,7 @@ import MakeFooter from './Footer';
 import BlackJack from './BlackJackHome';
 import BlackJackRules from './BlackJackRules';
 import BlackJackGame from './BlackJackGame.js';
+import OhHeavens from './OhHeavens';
 import Home from './Home';
 import { Route, Routes } from 'react-router-dom'
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/BlackJack.js" element={ <BlackJack />} />
           <Route path="/BlackJackGame.js" element={ <BlackJackGame />} />
           <Route path="/BlackJackRules.js" element={ <BlackJackRules />} />
+          <Route path="/OhHeavens.js" element={ <OhHeavens />} />
         </Routes>
       </div>
       <MakeFooter />

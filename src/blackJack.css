@@ -5,6 +5,7 @@
     border-radius: 10px;
     padding: 2%;
     color: white;
+    justify-items: center;
 }
 .blackJack .link {
     display: block;
@@ -12,10 +13,20 @@
 }
 .cardimages {
     display: flex;
+    justify-content: center;
 }
-#cardBackBlock {
+.displayBlock {
     display: block;
 }
-#cardBackNone {
+.displayNone {
     display: none;
+}
+#displayBlock {
+    display: block;
+}
+#displayNone {
+    display: none;
+}
+.handImage {
+    width: 20%;
 }
