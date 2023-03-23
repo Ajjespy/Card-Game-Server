@@ -70,7 +70,6 @@ class BlackJackGame extends React.Component{
         super(props)
         this.drawCards = this.drawCards.bind(this);
         this.getAceValue = this.getAceValue.bind(this);
-        this.getHandValue = this.getHandValue.bind(this);
         this.displayHand = this.displayHand.bind(this);
         this.dealerTurn = this.dealerTurn.bind(this);
         this.showModal = this.showModal.bind(this);
@@ -81,7 +80,7 @@ class BlackJackGame extends React.Component{
             dealerHand: [],
             values: {
                 playerHandValue: 0,
-                dealerHandValue: 0                
+                dealerHandValue: 0               
             },
             isDealerTurn: false,
             cardsDict: {},
@@ -180,33 +179,37 @@ class BlackJackGame extends React.Component{
     async drawCards(hand, number, key) {
         var editedHand = hand;
         var editedDeck = this.state.deck;
-        var editedValue = this.state.values[key];
+        var editedValue = 0;
         var editedValuesDict = this.state.values;
-        for (var i = 0; i < number; i++) {
+        for (var uselessVariable = 0; uselessVariable < number; uselessVariable++) {
             // Generate a random card
             var randCardIndex = Math.floor(Math.random() * editedDeck.length - 1);
             var randCard = editedDeck.splice(randCardIndex, 1);
     
             // Add the card to the player's hand
             editedHand.push(randCard[0]);
-
-            var aces = 0;
-            if (randCard[0].getName() === "A") {
+        }
+        var aces = 0;
+        for (var i = 0; i < editedHand.length; i++) {
+            if (editedHand[i].getName() === "A") {
                 // Add to the number of aces to calculate value later.
                 aces++;
             }
-            else if (randCard[0].getName() === "K" || randCard[0].getName() === "Q" || randCard[0].getName() === "J") {
-                // Face cards are worth 10.
+            else if (editedHand[i].getName() === "K" || editedHand[i].getName() === "Q" || editedHand[i].getName() === "J") {
+                // Face cards are worth 10. 
                 editedValue += 10;
             }
             else {
-                editedValue += randCard[0].getValue();
-            }
-            // Now add the value of the aces
-            for (var index = 0; index < aces; index++) {
-                editedValue += this.getAceValue(editedValue);
+                editedValue += editedHand[i].getValue();
             }
         }
+        // Now add the value of the aces
+        for (var index = 0; index < aces; index++) {
+            editedValue += this.getAceValue(editedValue);
+            console.log(`inside for loop`)
+        }
+        console.log(`edited value ${key} after aces loop: ${editedValue}`)
+
         editedValuesDict[key] = editedValue;
         console.log(`editedValue ${key}: ${editedValue}`)
         this.setState({
@@ -220,7 +223,6 @@ class BlackJackGame extends React.Component{
                     standDisabled: true
                 })
                 this.whoWon();
-                // <Link to="/BlackJack.js" className="navLink">Black Jack</Link>
             }
             if (this.state.isDealerTurn === true && this.state.values["dealerHandValue"] < 17) {
                 this.drawCards(this.state.dealerHand, 1, "dealerHandValue")
@@ -247,6 +249,11 @@ class BlackJackGame extends React.Component{
                 gameOverMessage: "You win!"
             });
         }
+        else if (this.state.values["playerHandValue"] === this.state.values["dealerHandValue"]) {
+            this.setState({
+                gameOverMessage: "Push"
+            });
+        }
         else {
             this.setState({
                 gameOverMessage: "Dealer wins!"
@@ -271,32 +278,6 @@ class BlackJackGame extends React.Component{
         else {
             return 1;
         }
-    }
-    async getHandValue(hand) {
-        var total = 0;
-        // Track the aces because they will be added at the end
-        var aces = 0;
-        // Traverse the list of cards and display each one and add the value to the total
-        for (var i = 0; i < hand.length; i++) {
-            // Add the value of the card to the total
-            if (hand[i].getName() === "A") {
-                // Add to the number of aces to calculate value later.
-                aces++;
-            }
-            else if (hand[i].getName() === "K" || hand[i].getName() === "Q" || hand[i].getName() === "J") {
-                // Face cards are worth 10.
-                total += 10;
-            }
-            else {
-                total += hand[i].getValue();
-            }
-        }
-        // Now add the value of the aces
-        for (var index = 0; index < aces; index++) {
-            total += this.getAceValue(total);
-        }
-        // Return the total
-        return total;
     }
     showModal() {
         this.setState({ showModal: true });

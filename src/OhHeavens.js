@@ -6,9 +6,11 @@
 // Who won the last trick (return value)
 
 import React from "react";
-// import Modal from './Modal.js';
+import Modal from './Modal.js';
 import Card from "./components/Card";
+import Player from "./components/Player";
 import "./App.css";
+import "./ohheavens.css";
 import {
     card_back,
     ace_of_spades,
@@ -79,13 +81,14 @@ class OhHeavens extends React.Component{
             deck: [],
             cardsDict: {},
             dealerQueue: [],
-            playQueue: [],
+            playerQueue: [],
             playerList: [],
             scoreboard: [],
             pile: [],
             currentRound: 0,
             numberOfCards: 7,
-            gameWinner: null
+            gameWinner: [100, "Joe"],
+            showModal: false
         }
         this.createCardsDict = this.createCardsDict.bind(this);
         this.createDeck = this.createDeck.bind(this);
@@ -95,6 +98,58 @@ class OhHeavens extends React.Component{
         this.whoWonTrick = this.whoWonTrick.bind(this);
         this.updateTricksWon = this.updateTricksWon.bind(this);
         this.playGame = this.playGame.bind(this);
+        this.numberOfCards = this.numberOfCards.bind(this);
+        this.determineWinner = this.determineWinner.bind(this);
+        this.calculatePoints = this.calculatePoints.bind(this);
+        this.whoStartsTrick = this.whoStartsTrick.bind(this);
+        this.askBid = this.askBid.bind(this);
+        this.playCard = this.playCard.bind(this);
+        this.updateDealerQueue = this.updateDealerQueue.bind(this);
+        this.displayDeck = this.displayDeck.bind(this);
+        this.displayAllHands = this.displayAllHands.bind(this);
+    }
+    async playGame() {
+      await this.createPlayers();
+      await this.createCardsDict();
+      await this.createDeck();
+
+      // GAME LOOP
+      // 13 is for the various rounds with hands of 7 down to 1, then back up to 7.
+      for (var i = 1; i <= 13; i++) {
+        let handSize = this.numberOfCards(i);
+        await this.drawCards(handSize);
+        for (var k = 0; k < this.state.playerList.length; k++) {
+            console.log(`${this.state.playerList[k].getName()}'s Hand:`)
+            this.state.playerList[k].getHand().forEach((card) => {
+                console.log(card)
+            })
+            // Display a hand, not a deck.
+            // this.displayDeck(this.state.playerList[i].getHand())
+        }
+        this.askBid(handSize); 
+
+        // Play a trick.
+        for (var j = 1; j <= handSize; j++) {
+
+            // Each player plays a card.
+            this.state.playerQueue.forEach(function (player) {
+                this.canPlayCard(player);
+                let cardIndex; // figure out how to pause until user input/get user input and store chosen card
+                this.playCard(player, cardIndex);
+            });
+
+            // Calculate the winning player and set them to start the next trick.
+            let winningPlayer = this.whoWonTrick();
+            this.updateTricksWon(winningPlayer);
+            this.whoStartsTrick(winningPlayer);
+        }
+
+        // Score points and start the next round.
+        this.calculatePoints();
+        this.resetRound();
+      }
+      this.determineWinner(); 
+      this.endGameDisplay(); //Args? - needs to be made
     }
     async createCardsDict() {
         const editedCardsDict = {
@@ -179,34 +234,56 @@ class OhHeavens extends React.Component{
             deck: editedDeck
         })
     }
-    async drawCards(hand, number) {
-        var tempHand = hand;
-        var tempDeck = this.state.deck;
-        for (var i = 0; i < number; i++) {
-            // Generate a random card
-            var randCardIndex = Math.floor(Math.random() * tempDeck.length - 1);
-            var randCard = tempDeck.splice(randCardIndex, 1);
-    
-            // Add the card to the player's hand
-            tempHand.push(randCard[0]);
+    // Update to go to each player or set as a forEach(), Args
+    async drawCards(number) {
+        for (var i = 0; i < this.state.playerList.length; i++) {
+            var tempHand = this.state.playerList[i].getHand();
+            var tempDeck = this.state.deck;
+            for (var j = 0; j < number; j++) {
+                // Generate a random card
+                var randCardIndex = Math.floor(Math.random() * tempDeck.length - 1);
+                var randCard = tempDeck.splice(randCardIndex, 1);
+
+                // Add the card to the player's hand
+                tempHand.push(randCard[0]);
+            }
+            this.state.playerList[i].setHand(tempHand);
+            this.setState({
+                deck: tempDeck
+            }, () => {
+                console.log(`updated deck`)
+            });
+        }
+    }
+    // Temporary player list for testing until we figure out the server
+    async createPlayers() {
+        var usernames = ["Joe", "Bob", "Sally", "Rachel"]
+        var tempPlayerList = this.state.playerList;
+        for (var i = 0; i < usernames.length; i++) {
+            var player = new Player();
+            player.setName(usernames[i]);
+            console.log(player.getName());
+            tempPlayerList.push(player);
         }
         this.setState({
-            hand: tempHand,
-            deck: tempDeck
+            playerList: tempPlayerList,
+            dealerQueue: tempPlayerList
         }, () => {
-            console.log(`finished setting hand: ${hand}`)
+            console.log("finished creating players")
         });
     }
     resetRound() {
+        var tempPlayerList = this.state.playerList
+        tempPlayerList.forEach((player) => {
+            player.resetPlayer();
+        })
         this.setState({
             deck: [],
             pile: []
         }, () => {
             this.createDeck();
             this.numberOfCards();
-            this.drawCards();
-            // loop through players?
-            // resetPlayer();
+            this.drawCards();            
         });
     }
     canPlayCard(player) {
@@ -226,60 +303,174 @@ class OhHeavens extends React.Component{
         if (validCards.length === 0) {
             validCards = tempHand;
         }
-        return validCards, invalidCards
+        return (validCards, invalidCards)
     }
-    // not finished yet
     whoWonTrick() {
         // pull trump cards if any
         // highest trump card = winner
         // else highest of first suit = winner
         var pile = this.state.pile;
         var firstCardSuit = this.state.pile[0].getSuit();
-        var trumpSuitCards = [];
-        var originalSuitCards = [];
-        var highest;
-        var winningCard;
-        for (var card in pile) {
-            if (card.getSuit() === this.state.trumpSuit) {
-                trumpSuitCards.push(card);
+        var trumpSuitCards = [0, null];
+        var originalSuitCards = [0, null];
+        var winningPlayer;
+        for (var i = 0; i < pile.length; i++) {
+            if (pile[i].getSuit() === this.state.trumpSuit) {
+                if (pile[i].getValue() > trumpSuitCards[0]) {
+                    trumpSuitCards.push(pile[i], this.state.playerQueue[i]);
+                }
             }
-            else if (card.getSuit() === firstCardSuit) {
-                originalSuitCards.push(card);
+            else if (pile[i].getSuit() === firstCardSuit) {
+                if (pile[i].getValue() > originalSuitCards[0]) {
+                    originalSuitCards.push(pile[i], this.state.playerQueue[i])
+                }
             }
         }
-        // if there is a trump card, ignore the others
         if (trumpSuitCards.length > 0) {
-            // figure out which card is the highest
-            if (trumpSuitCards.length === 1) {
-                winningCard = trumpSuitCards[0];
-            }
-            else {
-                // loop through cards to figure out which is highest
-            }
+            winningPlayer = trumpSuitCards[1];
         }
         else {
-            if (originalSuitCards.length === 1) {
-                winningCard = originalSuitCards[0];
+            winningPlayer = originalSuitCards[1];
+        }
+
+        return winningPlayer;
+    }
+    numberOfCards(round){ //done but not tested
+        if (round < 8){
+            return 8 - round
+        }
+        else {
+            return round - 6
+        }
+    }
+    determineWinner() { // Testing required
+        let max = (0, null)
+        let tlist = this.state.playerList
+        tlist.forEach(function (player){
+            let values = player.getPoints()
+            if (max[0] < values[-1]){
+                max = (values[-1], player.getName())
+            }
+        })
+        this.setState({
+            gameWinner: max
+        }, () => {
+            //add something here later if needed
+        })
+    }
+    calculatePoints(){ // Testing required
+        let pointsEarned
+        let tlist = this.state.playerList
+        for (var player in tlist){
+            if (player.tricksWon === player.bid){
+                pointsEarned = player.bid + 10
+            }
+            else {
+                pointsEarned = -10
+            }
+            player.updatePoints(pointsEarned)
+        }
+    }
+    whoStartsTrick(player) { // Testing required
+        let temp
+        let pqueue = this.state.playerQueue
+        while (pqueue[0] !== player){
+            temp = pqueue.shift()
+            pqueue.push(temp)
+        }
+        this.setState({
+            playerQueue: pqueue
+        }, () => {
+            //add something here later if needed
+        })
+    }
+    askBid(handSize){ //render buttons for bid options, figure out user input from buttons and waiting for them - playerQueue => dealerQueue?
+        let maxBid
+        let maxPlayer
+        let totalBid
+        let bidOptions = [];
+        this.updateDealerQueue()
+        let tdqueue = this.state.dealerQueue
+        for (var i = 1; i <= tdqueue.length; i++){
+            for (var j = 0; j <= handSize; j++){
+                // j + 1?
+                bidOptions.push(j)
+            }
+            if (i === tdqueue.length) {
+                let badBid = handSize - totalBid
+                if (badBid >= 0 &&  badBid <= handSize){
+                    bidOptions.splice(badBid)
+                }
+            }
+            //Render buttons through array maybe? (pass in bidOptions)
+            let tempBid = 1; // get tempBid from user input/wait for that input *?*
+            tdqueue[i].setBid(tempBid)
+            totalBid += tempBid
+            if (maxBid < tempBid){
+                maxBid = tempBid
+                maxPlayer = tdqueue[i]
             }
         }
-        
-        // pile and playerQueue should match up - return winningPlayer
-        
+        this.whoStartsTrick(maxPlayer)
         
     }
-    // should this just be part of whoWon()?
+    playCard(player, cardIndex){ // Testing required
+        let tempile = this.state.pile
+        let temphand = player.getHand()
+        let card = temphand.splice(cardIndex)
+        tempile.push(card)
+        this.setState({
+            pile: tempile
+        }, () => {
+            player.updateHand(temphand)
+        })
+    }
+    updateDealerQueue(){ // Testing required
+        let dqueue = this.state.dealerQueue
+        let temp = dqueue.shift()
+        dqueue.push(temp)
+        this.setState({
+            dealerQueue: dqueue
+        }, () => {
+            //add something here later if needed
+        })
+    }
+    // should this just be part of whoWonTrick()?
     updateTricksWon(winningPlayer) {
         winningPlayer.setTricksWon();
     }
-    playGame() {
-
+    displayDeck(deck) {
+        const listItems = deck.map((card) => <img className="handImage" src={card.getFilepath()} alt={card.getName()}></img>);
+        console.log("in display deck function")
+        return (
+            <div className="cardimages">
+            {listItems}
+            </div>
+        );
     }
+    showModal() {
+        this.setState({ showModal: true });
+    };
+    hideModal() {
+        this.setState({ showModal: false });
+    };
     render() {
         return (
             <div className="ohHeavens">
                 <h1>Oh Heavens</h1>
+                {/* {this.displayDeck(this.state.deck)} */}
+                {/* {this.displayAllHands()} */}
+                {/* {this.displayDeck(this.state.playerList[0].getHand())} */}
                 <button onClick={this.playGame}>Start</button>
 
+                <Modal show={this.state.showModal} handleClose={this.hideModal}> 
+                    {/* edit endgame screen */}
+                    <h2>{this.state.gameWinner[1]} Wins!</h2>
+                    <p>Points: {this.state.gameWinner[0]}</p>
+                    
+                </Modal>
+                
+                {/* <Link to="/OhHeavens.js"><button className="gameHomeBtn" type="button" onClick={this.hideModal()}>Play Again</button></Link> */}
             </div>
         )
     }
