@@ -448,15 +448,6 @@ class OhHeavens extends React.Component{
             </div>
         );
     }
-    displayAllHands() {
-        console.log("inside displayAllHands()")
-        var div;
-        for (var i = 0; i < this.state.playerList; i++) {
-
-            // Display a hand, not a deck.
-            this.displayDeck(this.state.playerList[i].getHand())
-        }
-    }
     showModal() {
         this.setState({ showModal: true });
     };
