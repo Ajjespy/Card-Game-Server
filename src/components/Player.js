@@ -4,11 +4,18 @@ class Player extends React.Component {
     constructor(props) {
         super(props)
         this.state =  {
+            name: "",
             bid: 0,
             points: [],
             hand: [],
             tricksWon: 0
         }
+    }
+    setName(user) {
+        this.state.name = user;
+    }
+    getName() {
+        return this.state.name;
     }
     resetPlayer() {
         this.setState({
@@ -34,7 +41,7 @@ class Player extends React.Component {
     getPoints() {
         return this.state.points;
     }
-    updateHand(hand) {
+    setHand(hand) {
         this.state.hand = hand;
     }
     getHand() {
@@ -47,3 +54,4 @@ class Player extends React.Component {
         return this.state.tricksWon;
     }
 }
+export default Player
