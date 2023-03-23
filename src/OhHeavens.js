@@ -346,11 +346,11 @@ class OhHeavens extends React.Component{
     determineWinner() { // Testing required
         let max = (0, null)
         let tlist = this.state.playerList
-        tlist.forEach(function (player){
+        tlist.forEach(function (player) {
             let values = player.getPoints()
-            if (max[0] < values[-1]){
-                max = (values[-1], player.getName())
-            }
+                if (max[0] < values[-1]) {
+                    max = (values[-1], player.getName())
+                }
         })
         this.setState({
             gameWinner: max

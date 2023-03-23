@@ -6,7 +6,7 @@ class Player extends React.Component {
         this.state =  {
             name: "",
             bid: 0,
-            points: [],
+            points: ["-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"],
             hand: [],
             tricksWon: 0
         }
@@ -30,12 +30,12 @@ class Player extends React.Component {
     getBid() {
         return this.state.bid;
     }
-    updatePoints(pointsEarned, currentRound) {
+    updatePoints(pointsEarned, currentRound, round) {
         if (this.state.currentRound < 2) {
-            this.state.points.push(pointsEarned);
+            this.state.points[round - 1] = pointsEarned;
         }
         else {
-            this.state.points.push(pointsEarned + this.state.points[currentRound-2]);
+            this.state.points[round - 1] = pointsEarned + this.state.points[currentRound-2];
         }
     }
     getPoints() {
