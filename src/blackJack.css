@@ -11,10 +11,6 @@
     display: block;
     text-align: center;
 }
-.cardimages {
-    display: flex;
-    justify-content: center;
-}
 .displayBlock {
     display: block;
 }
@@ -27,6 +23,55 @@
 #displayNone {
     display: none;
 }
-.handImage {
+.blackJack img {
+    width: 150px;
+}
+/* .handImage {
     width: 20%;
+} */
+/* .cardimages {
+    justify-content: center;
+} */
+/* .cardimages :nth-child(2) img{
+    width: 30%;
+    height: 100%;
+} */
+.cardimages div {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.playerHand div {
+    display: flex;
+    justify-content: center;
+}
+/* .deck {
+    margin: 0 auto;
+} */
+.buttons {
+    display: flex;
+    justify-content: center;
+}
+.buttons button {
+    margin: 10px;
+}
+.start {
+    margin-left: 42%;
+}
+.grid {
+    display: grid;
+    /* grid-template-columns: 1fr 1fr; */
+}
+.dealer {
+    display: flex;
+    justify-content: center;
+    /* grid-column: 2/3; */
+    /* grid-row: 1/2; */
+}
+.player {
+    /* grid-column: 1/3; */
+    /* grid-row: 2/3; */
+}
+.dealerHand {
+
 }
