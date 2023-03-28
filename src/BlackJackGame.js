@@ -299,8 +299,8 @@ class BlackJackGame extends React.Component{
     displayHand(hand) {
         const listItems = hand.map((card) => <img className="handImage" src={card.getFilepath()} alt={card.getName()}></img>);
         return (
-            <div className="cardimages">
-            {listItems}
+            <div>
+                {listItems}
             </div>
         );
     }
@@ -308,19 +308,28 @@ class BlackJackGame extends React.Component{
         return (
             <div id="blackjack" className="blackJack">
 
-                <button disabled={this.state.startDisabled} className="gameHomeBtn" onClick={this.startGame}>Start</button>
+                <button disabled={this.state.startDisabled} className="gameHomeBtn start" onClick={this.startGame}>Start</button>
+                <div className="grid">
 
-                <h1>Dealer Hand:</h1>
-                <div className="cardimages">
-                    <img id={this.state.isDealerTurn ? "displayNone":"displayBlock"} className="handImage" src={card_back} alt=""></img>
-                    {this.displayHand(this.state.dealerHand)}
+                    <h1 className="rightGrid">Dealer Hand:</h1>
+                    <div className="dealer">
+                        <img id={this.state.isDealerTurn ? "displayNone":"displayBlock"} className="handImage deck" src={card_back} alt=""></img>
+                        <div className="dealerHand rightGrid">
+                            {this.displayHand(this.state.dealerHand)}
+                        </div>
+                    </div>
+                    <div className="player">
+                        <h1 className="rightGrid">Your Hand:</h1>
+                        <div className="playerHand rightGrid">
+                            {this.displayHand(this.state.playerHand)}
+                        </div>
+                    </div>
                 </div>
 
-                <h1>Your Hand:</h1>
-                {this.displayHand(this.state.playerHand)}
-
-                <button disabled={this.state.hitMeDisabled} id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1, "playerHandValue")}>Hit me</button>
-                <button disabled={this.state.standDisabled} id="stand" className="gameHomeBtn" onClick={this.dealerTurn}>Stand</button>
+                <div className="buttons">
+                    <button disabled={this.state.hitMeDisabled} id="hitme" className="gameHomeBtn" onClick={this.drawCards.bind(this, this.state.playerHand, 1, "playerHandValue")}>Hit me</button>
+                    <button disabled={this.state.standDisabled} id="stand" className="gameHomeBtn" onClick={this.dealerTurn}>Stand</button>
+                </div>
 
                 <Modal show={this.state.showModal} handleClose={this.hideModal}>
                     <h2>{this.state.gameOverMessage}</h2>
