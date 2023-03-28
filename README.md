@@ -4,7 +4,7 @@ Author - Aces
     - Austin Jesperson
     - Sammie Atkins
     - Jordan Sherwood
-    - {Add Name Here}
+    - Michael Darling
 
 ## Project Description
 
